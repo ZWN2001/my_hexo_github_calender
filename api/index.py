@@ -10,7 +10,7 @@ def getdata(name):
     gitpage = requests.get("https://github.com/" + name)
     data = gitpage.text
     datadatereg = re.compile(r'data-date="(.*?)" data-level')
-    datacountreg = re.compile(r'<span class="sr-only">(.*?) contribution')
+    datacountreg = re.compile(r'(\d+|No) contribution')
     datadate = datadatereg.findall(data)
     datacount = datacountreg.findall(data)
     datacount = list(map(int, [0 if i == "No" else i for i in datacount]))
@@ -41,3 +41,5 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(data).encode('utf-8'))
         return
+
+getdata("ZWN2001")
