@@ -10,29 +10,35 @@ def list_split(items, n):
 
 
 def getdata(name):
-    gitpage = requests.get("https://github.com/" + name)
-    data = gitpage.text
-    datadatereg = re.compile(r'data-date="(.*?)" data-level')
-    datacountreg = re.compile(r'(\d+|No) contribution')
-    datadate = datadatereg.findall(data)
-    datacount = datacountreg.findall(data)
-    datacount = list(map(int, [0 if i == "No" else i for i in datacount]))
+    try:
+        gitpage = requests.get("https://github.com/" + name)
+        data = gitpage.text
+        datadatereg = re.compile(r'data-date="(.*?)" data-level')
+        datacountreg = re.compile(r'(\d+|No) contribution')
+        datadate = datadatereg.findall(data)
+        datacount = datacountreg.findall(data)
+        datacount = list(map(int, [0 if i == "No" else i for i in datacount]))
 
-    # 将datadate和datacount按照字典序排序
-    sorted_data = sorted(zip(datadate, datacount))
-    datadate, datacount = zip(*sorted_data)
+        # 将datadate和datacount按照字典序排序
+        sorted_data = sorted(zip(datadate, datacount))
+        datadate, datacount = zip(*sorted_data)
 
-    contributions = sum(datacount)
-    datalist = []
-    for index, item in enumerate(datadate):
-        itemlist = {"date": item, "count": datacount[index]}
-        datalist.append(itemlist)
-    datalistsplit = list_split(datalist, 7)
-    returndata = {
-        "total": contributions,
-        "contributions": datalistsplit
-    }
-    return returndata
+        contributions = sum(datacount)
+        datalist = []
+        for index, item in enumerate(datadate):
+            itemlist = {"date": item, "count": datacount[index]}
+            datalist.append(itemlist)
+        datalistsplit = list_split(datalist, 7)
+        returndata = {
+            "total": contributions,
+            "contributions": datalistsplit
+        }
+        return returndata
+    except Exception as e:
+        # 返回报错
+        return e
+
+
 
 
 class handler(BaseHTTPRequestHandler):
@@ -47,4 +53,4 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(data).encode('utf-8'))
         return
 
-getdata("ZWN2001")
+# getdata("ZWN2001")
